@@ -4,7 +4,7 @@
   "description": "Proves the extensions/ bundling mechanism works. Replaced by real functionality starting piece 1.",
   "version": "0.0.1",
   "publisher": "vibe-ide",
-  "engines": { "vscode": "^1.90.0" },
+  "engines": { "vscode": "^1.126.0" },
   "categories": ["Other"],
   "activationEvents": ["onStartupFinished"],
   "main": "./out/extension.js",

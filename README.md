@@ -8,28 +8,59 @@ source into freely-licensed binaries.
 VSCodium's build pipeline, with a hosted terminal, live preview, and orchestration features
 bundled as extensions on top.
 
-Right now this repo is an unmodified fork — no branding, patches, or product changes have been
-applied yet. It exists to prove the build pipeline works end to end (`./dev/build.sh -p` producing
-a launchable, VSCodium-branded app) before any customization begins.
-
 ## Status
 
-- [x] Fork VSCodium's build pipeline and verify the baseline build (this step)
-- [ ] Branding pass (name, icons, product.json)
+- [x] Fork VSCodium's build pipeline and verify the baseline build
+- [x] Branding pass (name, bundle id, product.json)
+- [x] `extensions/` workspace scaffolded with a working placeholder
 - [ ] Hosted terminal extension
 - [ ] Live preview extension
 - [ ] Orchestration features
+
+Branding is applied: the app is **"Vibe IDE"** (working title), bundle id `com.vibeide.app`,
+binary name `vibeide`. Some VSCodium identity strings are not yet re-branded — see
+[Known gaps](#known-gaps) below.
 
 For the full design and rollout plan, see the design spec in the `spin311/claude-helper` repo
 (cross-repo link, informational only — not a build dependency; that repo is private, so the
 link only resolves for people with access):
 `docs/superpowers/specs/2026-09-04-vscodium-fork-scaffold-design.md`
 
-Until this repo grows its own documentation, that spec is the source of truth for scope and
-sequencing.
-
 ## Building
 
-This repo's build pipeline is currently VSCodium's own, unmodified. See VSCodium's
-[build documentation](https://github.com/VSCodium/vscodium/blob/master/docs/howto-build.md)
-for toolchain requirements and build instructions.
+Branding is applied via environment variables, not by editing checked-in build scripts. To
+build with Vibe IDE branding:
+
+```bash
+source scripts/set-branding-env.sh
+./build.sh
+```
+
+`build.sh` is the production build path and picks up the branding env vars exported by
+`scripts/set-branding-env.sh`.
+
+**Do not use `./dev/build.sh` for a branded build** — it is a local convenience wrapper that
+hardcodes VSCodium's own `APP_NAME`, `BINARY_NAME`, etc. as plain assignments, which clobbers
+any branding vars already exported in your shell (only `./dev/build.sh`'s command-line flags,
+e.g. `-i` for Insiders, are meant to change its behavior). Use the two-line `build.sh` path
+above instead. See `docs/patches.md` and `docs/howto-build.md` for the underlying VSCodium
+pipeline mechanics if you need them.
+
+### Windows
+
+Windows builds are configured but unverified. See `docs/windows-build-status.md`.
+
+## Known gaps
+
+- **Windows branding.** `docs/windows-build-status.md` tracks what a Windows build has not
+  yet had verified, plus a set of VSCodium identity strings (`win32ShellNameShort`,
+  `win32AppUserModelId`, the `win32*AppId` installer GUIDs, etc.) that are still VSCodium's own
+  and would need to change before a Windows installer built from this tree could safely coexist
+  with a real VSCodium install.
+- **Extensions bundling.** `extensions/` is the workspace for this project's own functionality
+  (hosted terminal, live preview, orchestration), built as VS Code extensions rather than forked
+  into `vscode/` itself. `extensions/vibe-ide-placeholder/` is a placeholder package that proves
+  the install mechanism works end to end (build a `.vsix`, install it into the running app via
+  the CLI) — but nothing in the build pipeline (`build.sh`, `prepare_vscode.sh`, `prepare_src.sh`,
+  `get_repo.sh`) automatically bundles `extensions/` into the packaged app yet. See
+  `docs/extensions-workspace.md`.
