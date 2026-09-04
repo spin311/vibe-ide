@@ -33,17 +33,17 @@ build with Vibe IDE branding:
 
 ```bash
 source scripts/set-branding-env.sh
-./build.sh
+./dev/build.sh -p
 ```
 
-`build.sh` is the production build path and picks up the branding env vars exported by
-`scripts/set-branding-env.sh`.
-
-**Do not use `./dev/build.sh` for a branded build** — it is a local convenience wrapper that
-hardcodes VSCodium's own `APP_NAME`, `BINARY_NAME`, etc. as plain assignments, which clobbers
-any branding vars already exported in your shell (only `./dev/build.sh`'s command-line flags,
-e.g. `-i` for Insiders, are meant to change its behavior). Use the two-line `build.sh` path
-above instead. See `docs/patches.md` and `docs/howto-build.md` for the underlying VSCodium
+Use `./dev/build.sh`, not a bare `./build.sh` — `build.sh`'s entire body is gated behind
+`SHOULD_BUILD=yes`, which is otherwise only set by CI, so calling it directly without also
+setting `SHOULD_BUILD`/`OS_NAME`/`VSCODE_ARCH` and first sourcing `get_repo.sh` to check out
+`vscode/` will silently no-op or fail with `'vscode' dir not found`. `dev/build.sh` handles
+all of that for you and calls `build.sh` internally — it now correctly picks up the branding
+vars exported by `scripts/set-branding-env.sh` (its five `APP_NAME`/`BINARY_NAME`/etc. lines
+use `${VAR:-default}` fallback syntax, so anything already exported wins instead of being
+clobbered). See `docs/patches.md` and `docs/howto-build.md` for the underlying VSCodium
 pipeline mechanics if you need them.
 
 ### Windows
