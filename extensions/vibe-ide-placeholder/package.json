@@ -1,0 +1,22 @@
+{
+  "name": "vibe-ide-placeholder",
+  "displayName": "Vibe IDE Placeholder",
+  "description": "Proves the extensions/ bundling mechanism works. Replaced by real functionality starting piece 1.",
+  "version": "0.0.1",
+  "publisher": "vibe-ide",
+  "engines": { "vscode": "^1.90.0" },
+  "categories": ["Other"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./out/extension.js",
+  "contributes": {},
+  "scripts": {
+    "compile": "tsc -p ./",
+    "package": "vsce package --no-dependencies -o vibe-ide-placeholder.vsix"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.90.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0",
+    "@vscode/vsce": "^2.24.0"
+  }
+}
