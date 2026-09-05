@@ -15,13 +15,16 @@ export class SessionManager {
   private sessions = new Map<string, HostedSession>();
   private onStateChanged: (state: SessionListState) => void;
   private onOutput: (sessionId: string, data: string) => void;
+  private onSessionEnded: (sessionId: string, exitCode: number | null) => void;
 
   constructor(
     onStateChanged: (state: SessionListState) => void,
-    onOutput: (sessionId: string, data: string) => void
+    onOutput: (sessionId: string, data: string) => void,
+    onSessionEnded: (sessionId: string, exitCode: number | null) => void
   ) {
     this.onStateChanged = onStateChanged;
     this.onOutput = onOutput;
+    this.onSessionEnded = onSessionEnded;
   }
 
   openSession(directory: string): string {
@@ -32,14 +35,28 @@ export class SessionManager {
     this.state = addSession(this.state, directory, id, title);
     this.onStateChanged(this.state);
 
-    session.start(
-      (data) => this.onOutput(id, data),
-      (exitCode) => {
-        this.state = markEnded(this.state, id, exitCode);
-        this.onStateChanged(this.state);
-      }
-    );
+    try {
+      session.start(
+        (data) => this.onOutput(id, data),
+        (exitCode) => {
+          this.state = markEnded(this.state, id, exitCode);
+          this.onStateChanged(this.state);
+          this.onSessionEnded(id, exitCode);
+        }
+      );
+    } catch {
+      this.state = markEnded(this.state, id, null);
+      this.onStateChanged(this.state);
+      this.onSessionEnded(id, null);
+    }
     return id;
+  }
+
+  disposeAll(): void {
+    for (const session of this.sessions.values()) {
+      session.stop();
+    }
+    this.sessions.clear();
   }
 
   closeSession(id: string): void {

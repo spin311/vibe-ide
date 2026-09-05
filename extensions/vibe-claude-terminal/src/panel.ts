@@ -6,8 +6,9 @@ export class ClaudeTerminalPanel {
   private static current: ClaudeTerminalPanel | undefined;
   private readonly panel: vscode.WebviewPanel;
   private readonly sessionManager: SessionManager;
+  private disposed = false;
 
-  static createOrShow(extensionUri: vscode.Uri): void {
+  static createOrShow(extensionUri: vscode.Uri, context: vscode.ExtensionContext): void {
     if (ClaudeTerminalPanel.current) {
       ClaudeTerminalPanel.current.panel.reveal();
       return;
@@ -25,14 +26,19 @@ export class ClaudeTerminalPanel {
         ],
       }
     );
+    // Registering the panel as a disposable means a normal extension deactivation
+    // (not just the user closing the tab) also disposes it, which fires
+    // onDidDispose below and stops every live session.
+    context.subscriptions.push(panel);
     ClaudeTerminalPanel.current = new ClaudeTerminalPanel(panel, extensionUri);
   }
 
   private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
     this.panel = panel;
     this.sessionManager = new SessionManager(
-      (state) => this.panel.webview.postMessage({ type: 'stateChanged', state }),
-      (sessionId, data) => this.panel.webview.postMessage({ type: 'output', sessionId, data })
+      (state) => this.postMessage({ type: 'stateChanged', state }),
+      (sessionId, data) => this.postMessage({ type: 'output', sessionId, data }),
+      (sessionId, exitCode) => this.postMessage({ type: 'sessionEnded', sessionId, exitCode })
     );
 
     this.panel.webview.html = this.getHtml(extensionUri);
@@ -61,8 +67,22 @@ export class ClaudeTerminalPanel {
     });
 
     this.panel.onDidDispose(() => {
+      this.disposed = true;
+      this.sessionManager.disposeAll();
       ClaudeTerminalPanel.current = undefined;
     });
+  }
+
+  private postMessage(message: unknown): void {
+    if (this.disposed) {
+      return;
+    }
+    try {
+      this.panel.webview.postMessage(message);
+    } catch {
+      // Webview may have been disposed between the check above and this call
+      // (e.g. a callback fired during the same tick as disposal); ignore.
+    }
   }
 
   private getHtml(extensionUri: vscode.Uri): string {
@@ -83,6 +103,7 @@ export class ClaudeTerminalPanel {
 <html>
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} data:; script-src ${webview.cspSource}; style-src ${webview.cspSource} 'unsafe-inline'; font-src ${webview.cspSource};">
   <link rel="stylesheet" href="${xtermCss}">
   <link rel="stylesheet" href="${styleUri}">
 </head>

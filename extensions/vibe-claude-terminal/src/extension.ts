@@ -4,7 +4,7 @@ import { ClaudeTerminalPanel } from './panel';
 
 export function activate(context: vscode.ExtensionContext) {
   const disposable = vscode.commands.registerCommand('vibeClaudeTerminal.open', () => {
-    ClaudeTerminalPanel.createOrShow(context.extensionUri);
+    ClaudeTerminalPanel.createOrShow(context.extensionUri, context);
   });
   context.subscriptions.push(disposable);
 }
