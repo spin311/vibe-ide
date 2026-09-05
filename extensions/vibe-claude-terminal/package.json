@@ -1,0 +1,37 @@
+{
+  "name": "vibe-claude-terminal",
+  "displayName": "Vibe Claude Terminal",
+  "description": "Hosts claude as a subprocess in a dedicated multi-session panel.",
+  "version": "0.0.1",
+  "publisher": "vibe-ide",
+  "engines": { "vscode": "^1.126.0" },
+  "categories": ["Other"],
+  "activationEvents": ["onCommand:vibeClaudeTerminal.open"],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "vibeClaudeTerminal.open",
+        "title": "Vibe IDE: Open Claude Session"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "test": "vitest run",
+    "package": "vsce package -o vibe-claude-terminal.vsix",
+    "postinstall": "node -e \"const fs=require('fs'),path=require('path');const d=path.join(__dirname,'node_modules/node-pty/prebuilds');if(fs.existsSync(d)){for(const p of fs.readdirSync(d)){const h=path.join(d,p,'spawn-helper');if(fs.existsSync(h))fs.chmodSync(h,0o755);}}\""
+  },
+  "dependencies": {
+    "node-pty": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.126.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^2.0.0",
+    "@vscode/vsce": "^2.24.0",
+    "@xterm/xterm": "^5.5.0",
+    "@xterm/addon-fit": "^0.10.0"
+  }
+}
