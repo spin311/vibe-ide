@@ -52,18 +52,21 @@
     }
   }
 
+  function fitAndNotify(sessionId, entry) {
+    entry.fitAddon.fit();
+    const dims = entry.fitAddon.proposeDimensions();
+    if (dims) {
+      vscode.postMessage({ type: 'resize', sessionId, cols: dims.cols, rows: dims.rows });
+    }
+  }
+
   function showActive(state) {
     activeId = state.activeId;
     for (const [id, entry] of terminals) {
       entry.container.style.display = id === activeId ? 'block' : 'none';
     }
     if (activeId && terminals.has(activeId)) {
-      const entry = terminals.get(activeId);
-      entry.fitAddon.fit();
-      const dims = entry.fitAddon.proposeDimensions();
-      if (dims) {
-        vscode.postMessage({ type: 'resize', sessionId: activeId, cols: dims.cols, rows: dims.rows });
-      }
+      fitAndNotify(activeId, terminals.get(activeId));
     }
   }
 
@@ -97,7 +100,7 @@
 
   window.addEventListener('resize', () => {
     if (activeId && terminals.has(activeId)) {
-      terminals.get(activeId).fitAddon.fit();
+      fitAndNotify(activeId, terminals.get(activeId));
     }
   });
 })();
