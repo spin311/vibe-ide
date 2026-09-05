@@ -12,8 +12,8 @@ bundled as extensions on top.
 
 - [x] Fork VSCodium's build pipeline and verify the baseline build
 - [x] Branding pass (name, bundle id, product.json)
-- [x] `extensions/` workspace scaffolded with a working placeholder
-- [ ] Hosted terminal extension
+- [x] `extensions/` workspace scaffolded with a branded app and hosted terminal extension
+- [x] Hosted terminal extension
 - [ ] Live preview extension
 - [ ] Orchestration features
 
@@ -59,8 +59,8 @@ Windows builds are configured but unverified. See `docs/windows-build-status.md`
   with a real VSCodium install.
 - **Extensions bundling.** `extensions/` is the workspace for this project's own functionality
   (hosted terminal, live preview, orchestration), built as VS Code extensions rather than forked
-  into `vscode/` itself. `extensions/vibe-ide-placeholder/` is a placeholder package that proves
-  the install mechanism works end to end (build a `.vsix`, install it into the running app via
-  the CLI) — but nothing in the build pipeline (`build.sh`, `prepare_vscode.sh`, `prepare_src.sh`,
-  `get_repo.sh`) automatically bundles `extensions/` into the packaged app yet. See
-  `docs/extensions-workspace.md`.
+  into `vscode/` itself. `extensions/vibe-claude-terminal/` is the real hosted-terminal extension
+  and proves the install mechanism works end to end (build a `.vsix`, install it into the running
+  app via the CLI) — but nothing in the build pipeline (`build.sh`, `prepare_vscode.sh`,
+  `prepare_src.sh`, `get_repo.sh`) automatically bundles `extensions/` into the packaged app yet.
+  See `docs/extensions-workspace.md`.
