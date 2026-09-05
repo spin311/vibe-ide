@@ -7,16 +7,19 @@ mostly be "add an extension," not "patch VS Code core."
 
 ## What exists today
 
-`extensions/vibe-ide-placeholder/` is a minimal extension package that proves the install
-mechanism works end to end:
+`extensions/vibe-claude-terminal/` is the current real package — it replaced the piece-0
+placeholder (`vibe-ide-placeholder/`, now deleted) once piece 1 started. It proves the same
+install mechanism end to end:
 
 1. `npm install && npm run compile` builds it.
-2. `npm run package` (`vsce package --no-dependencies`) produces a `.vsix`.
+2. `npm run package` (`vsce package`) produces a `.vsix`.
 3. That `.vsix` can be installed into a running build of the app via its CLI, e.g.
-   `bin/vibeide --install-extension extensions/vibe-ide-placeholder/vibe-ide-placeholder.vsix`.
+   `bin/vibeide --install-extension extensions/vibe-claude-terminal/vibe-claude-terminal.vsix`.
 
-This confirms the packaging and install-time mechanism works. It does not confirm anything about
-distribution.
+It also proved something the placeholder never tested: that a native-module dependency
+(`node-pty`) actually loads and runs inside the packaged Electron-based app's extension host, not
+just that a pure-JS extension installs. This confirms the packaging and install-time mechanism
+works. It does not confirm anything about distribution.
 
 ## What does NOT exist yet
 

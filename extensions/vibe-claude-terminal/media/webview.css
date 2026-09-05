@@ -1,0 +1,44 @@
+/* extensions/vibe-claude-terminal/media/webview.css */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: var(--vscode-editor-background);
+  color: var(--vscode-editor-foreground);
+}
+#tab-bar {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--vscode-editorGroup-border);
+  padding: 4px;
+}
+.tab {
+  padding: 4px 10px;
+  margin-right: 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+.tab.active {
+  background: var(--vscode-tab-activeBackground);
+}
+.tab-close {
+  margin-left: 6px;
+  opacity: 0.7;
+}
+#new-session {
+  cursor: pointer;
+  padding: 4px 10px;
+  font-size: 14px;
+}
+#terminal-container {
+  position: absolute;
+  top: 32px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+.terminal-instance {
+  height: 100%;
+  width: 100%;
+}
