@@ -31,7 +31,12 @@
     "@types/vscode": "^1.126.0",
     "@types/node": "^20.0.0",
     "typescript": "^5.4.0",
-    "vitest": "^2.0.0",
-    "@vscode/vsce": "^2.24.0"
+    "vitest": "^4.1.12",
+    "@vscode/vsce": "^4.1.0"
+  },
+  "overrides": {
+    "@vscode/vsce": {
+      "minimatch": "^11.0.1"
+    }
   }
 }
